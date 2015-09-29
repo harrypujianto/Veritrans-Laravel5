@@ -11,7 +11,7 @@ class PagesController extends Controller
 {
     public function __construct()
     {   
-        Veritrans::$serverKey = 'VT-server-UJ4uPuXhwiNXwhpQx5-S76U1';
+        Veritrans::$serverKey = '<your server key>';
         Veritrans::$isProduction = false;
     }
 
@@ -105,8 +105,6 @@ class PagesController extends Controller
     {
         $token = $request->input('token_id');
         $vt = new Veritrans;
-        $params = array('server_key' => 'VT-server-UJ4uPuXhwiNXwhpQx5-S76U1', 'production' => false);
-        $vt->config($params);
 
         $transaction_details = array(
             'order_id'          => uniqid(),
