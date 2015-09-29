@@ -14,21 +14,6 @@ class PagesController extends Controller
         Veritrans::$serverKey = 'VT-server-UJ4uPuXhwiNXwhpQx5-S76U1';
         Veritrans::$isProduction = false;
     }
-    
-    public function home() 
-    {
-        return view('home'); 
-    }
-
-    public function about() 
-    {
-        return view('about'); 
-    }   
-
-    public function contact() 
-    {
-        return view('tickets.create'); 
-    }
 
     public function vtweb() 
     {
