@@ -178,7 +178,7 @@ you can see VT-Direct process [here](https://github.com/harrypujianto/Veritrans-
 <head>
 	<title>Checkout</title>
 	<!-- Include PaymentAPI  -->
-	<link rel="stylesheet" href="<?php echo base_url();?>asset/css/jquery.fancybox.css">
+	<link href="{{ URL::to('css/jquery.fancybox.css') }}" rel="stylesheet"> 
 </head>
 <body>
 	<script type="text/javascript" src="https://api.sandbox.veritrans.co.id/v2/assets/js/veritrans.min.js"></script>
