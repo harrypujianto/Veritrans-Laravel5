@@ -352,7 +352,7 @@ $customer_details = array(
 
 ```php
 // Token ID from checkout page
-$token_id = $_POST['token_id'];
+$token_id = $request->input('token_id');
 ```
 ##### 4. Create Transaction Data
 
@@ -374,6 +374,8 @@ $transaction_data = array(
 ##### 5. Charge
 
 ```php
+//create new object from Veritrans class
+$vt = new Veritrans;
 $response= $vt->vtdirect_charge($transaction_data);
 ```
 
@@ -427,30 +429,24 @@ else {
 
 #### Process Transaction
 More details can be found [here](https://github.com/harrypujianto/Veritrans-Laravel5/blob/master/app/Http/Controllers/TransactionController.php)
-##### Get a Transaction 
+
 Don't forget to create new veritrans object
 ```php
 //creating new veritrans object
 $vt = new Veritrans;
 ```
+##### Get a Transaction Status
 ```php
 $status = $vt->status($order_id);
 var_dump($status);
 ```
 ##### Approve a Transaction
-
 ```php
 $approve = $vt->approve($order_id);
 var_dump($approve);
 ```
-
 ##### Cancel a Transaction
-
 ```php
 $cancel = $vt->cancel($order_id);
 var_dump($cancel);
 ```
-
-
-
-
