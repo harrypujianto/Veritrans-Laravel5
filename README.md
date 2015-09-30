@@ -63,11 +63,11 @@ class YourController extends Controller
 
 ### VT-Web
 
-You can see some more details of VT-Web examples [here](https://github.com/harrypujianto/Veritrans-Laravel5/blob/master/app/Http/Controllers/PagesController.php).
+You can see some more details of VT-Web examples [here](https://github.com/harrypujianto/Veritrans-Laravel5/blob/master/app/Http/Controllers/VtwebController.php`).
 
 #### Get Redirection URL of a Charge
 ```php
-//you don't have to use the function name 'vtweb_charge', it's just an example
+//you don't have to use the function name 'vtweb', it's just an example
 public function vtweb()
 {
     //create new object from Veritrans class
@@ -93,53 +93,83 @@ public function vtweb()
 ```
 
 #### Handle Notification Callback
-[here](https://github.com/harrypujianto/Veritrans-Codeigniter/blob/master/application/controllers/vtweb.php).
+
+Create a route in the route.php. The route must be post, since we're getting http post notification. 
+```php
+Route::post('/vt_notif', 'VtwebController@notification');
+```
+
+You need to exclude the notification route from CsrfToken Verification
+Edit VerifyCsrfToken.php which located in App/http/middleware/VerifyCsrfToken.php
+```php
+//before
+    class VerifyCsrfToken extends BaseVerifier
+    {
+        protected $except = [
+            //
+        ];
+    }
+    
+//after
+    class VerifyCsrfToken extends BaseVerifier
+    {
+        protected $except = [
+            //
+        'vt_notif'
+        ];
+    }
+```
+
+You can see some more details of notification handler examples [here](https://github.com/harrypujianto/Veritrans-Laravel5/blob/master/app/Http/Controllers/VtwebController.php) (line 101).
 ```php
 //you don't have to use the function name 'notification', it's just an example
-public function notificarion()
+public function notification()
 {
+        $vt = new Veritrans;
+        echo 'test notification handler';
         $json_result = file_get_contents('php://input');
-		$result = json_decode($json_result);
-		if($result){
-		$notif = $this->veritrans->status($result->order_id);
-		}
-		
-		$transaction = $notif->transaction_status;
-		$type = $notif->payment_type;
-		$order_id = $notif->order_id;
-		$fraud = $notif->fraud_status;
-		if ($transaction == 'capture') {
-		  // For credit card transaction, we need to check whether transaction is challenge by FDS or not
-		  if ($type == 'credit_card'){
-		    if($fraud == 'challenge'){
-		      // TODO set payment status in merchant's database to 'Challenge by FDS'
-		      // TODO merchant should decide whether this transaction is authorized or not in MAP
-		      echo "Transaction order_id: " . $order_id ." is challenged by FDS";
-		      } 
-		      else {
-		      // TODO set payment status in merchant's database to 'Success'
-		      echo "Transaction order_id: " . $order_id ." successfully captured using " . $type;
-		      }
-		    }
-		  }
-		else if ($transaction == 'settlement' && $type != 'credit_card'){
-		  // TODO set payment status in merchant's database to 'Settlement'
-		  echo "Transaction order_id: " . $order_id ." successfully transfered using " . $type;
-		  } 
-		  else if($transaction == 'pending'){
-		  // TODO set payment status in merchant's database to 'Pending'
-		  echo "Waiting customer to finish transaction order_id: " . $order_id . " using " . $type;
-		  } 
-		  else if ($transaction == 'deny') {
-		  // TODO set payment status in merchant's database to 'Denied'
-		  echo "Payment using " . $type . " for transaction order_id: " . $order_id . " is denied.";
-		}
+        $result = json_decode($json_result);
+        if($result){
+        $notif = $vt->status($result->order_id);
+        }
+        /*
+        $transaction = $notif->transaction_status;
+        $type = $notif->payment_type;
+        $order_id = $notif->order_id;
+        $fraud = $notif->fraud_status;
+
+        if ($transaction == 'capture') {
+          // For credit card transaction, we need to check whether transaction is challenge by FDS or not
+          if ($type == 'credit_card'){
+            if($fraud == 'challenge'){
+              // TODO set payment status in merchant's database to 'Challenge by FDS'
+              // TODO merchant should decide whether this transaction is authorized or not in MAP
+              echo "Transaction order_id: " . $order_id ." is challenged by FDS";
+              } 
+              else {
+              // TODO set payment status in merchant's database to 'Success'
+              echo "Transaction order_id: " . $order_id ." successfully captured using " . $type;
+              }
+            }
+          }
+        else if ($transaction == 'settlement'){
+          // TODO set payment status in merchant's database to 'Settlement'
+          echo "Transaction order_id: " . $order_id ." successfully transfered using " . $type;
+          } 
+          else if($transaction == 'pending'){
+          // TODO set payment status in merchant's database to 'Pending'
+          echo "Waiting customer to finish transaction order_id: " . $order_id . " using " . $type;
+          } 
+          else if ($transaction == 'deny') {
+          // TODO set payment status in merchant's database to 'Denied'
+          echo "Payment using " . $type . " for transaction order_id: " . $order_id . " is denied.";
+        }*/
 ```
 
 ### VT-Direct
-You can see VT-Direct form [here](https://github.com/harrypujianto/Veritrans-Codeigniter/blob/master/application/controllers/vtweb.php).
+You can see VT-Direct form [here](https://github.com/harrypujianto/Veritrans-Laravel5/blob/master/resources/views/checkout.blade.php).
 
-you can see VT-Direct process [here](https://github.com/harrypujianto/Veritrans-Codeigniter/blob/master/application/views/checkout_with_3ds.php).
+you can see VT-Direct process [here](https://github.com/harrypujianto/Veritrans-Laravel5/blob/master/app/Http/Controllers/VtdirectController.php).
 
 #### Checkout Page
 
@@ -152,11 +182,11 @@ you can see VT-Direct process [here](https://github.com/harrypujianto/Veritrans-
 </head>
 <body>
 	<script type="text/javascript" src="https://api.sandbox.veritrans.co.id/v2/assets/js/veritrans.min.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-	<script type="text/javascript" src="<?php echo base_url();?>asset/js/jquery.fancybox.pack.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>	
+	<script type="text/javascript" src="{{ URL::to('js/jquery.fancybox.pack.js') }}"></script>
 
 	<h1>Checkout</h1>
-	<form action="<?php echo site_url()?>/vtdirect/vtdirect_cc_charge" method="POST" id="payment-form">
+	<form action="vtdirect" method="POST" id="payment-form">
 		<fieldset>
 			<legend>Checkout</legend>
 			<p>
@@ -344,7 +374,7 @@ $transaction_data = array(
 ##### 5. Charge
 
 ```php
-$response= $this->veritrans->vtdirect_charge($transaction_data);
+$response= $vt->vtdirect_charge($transaction_data);
 ```
 
 ##### 6. Handle Transaction Status
@@ -396,24 +426,28 @@ else {
 ```
 
 #### Process Transaction
-
-##### Get a Transaction Status
-
+More details can be found [here](https://github.com/harrypujianto/Veritrans-Laravel5/blob/master/app/Http/Controllers/TransactionController.php)
+##### Get a Transaction 
+Don't forget to create new veritrans object
 ```php
-$status = $this->veritrans->status($order_id);
+//creating new veritrans object
+$vt = new Veritrans;
+```
+```php
+$status = $vt->status($order_id);
 var_dump($status);
 ```
 ##### Approve a Transaction
 
 ```php
-$approve = $this->veritrans->approve($order_id);
+$approve = $vt->approve($order_id);
 var_dump($approve);
 ```
 
 ##### Cancel a Transaction
 
 ```php
-$cancel = $this->veritrans->cancel($order_id);
+$cancel = $vt->cancel($order_id);
 var_dump($cancel);
 ```
 
