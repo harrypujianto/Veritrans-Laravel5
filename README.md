@@ -138,7 +138,7 @@ public function token()
     }
 ```
 
-### SNAP UI
+#### SNAP UI
 In this section you could see the code, how to get snap token with ajax and open the snap pop up on the page. Please refer [here](https://github.com/harrypujianto/Veritrans-Laravel5/blob/master/resources/views/snap_checkout.blade.php)
 ```
 <html>
