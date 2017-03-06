@@ -16,7 +16,7 @@ class Midtrans {
     * false for sandbox mode
     * @static
     */
-  public static $isProduction = false;
+  public static $isProduction;
 
     /**
     * Default options for every request
@@ -25,7 +25,7 @@ class Midtrans {
     public static $curlOptions = array(); 
 
     const SANDBOX_BASE_URL = 'https://app.sandbox.midtrans.com/snap/v1';
-    const PRODUCTION_BASE_URL = 'ttps://app.midtrans.com/snap/v1';
+    const PRODUCTION_BASE_URL = 'https://app.midtrans.com/snap/v1';
 
     public function config($params)
     {
@@ -73,7 +73,6 @@ class Midtrans {
    */
     public static function remoteCall($url, $server_key, $data_hash, $post = true)
     { 
-
       $ch = curl_init();
 
       $curl_options = array(

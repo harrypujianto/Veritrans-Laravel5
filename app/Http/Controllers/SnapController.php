@@ -11,7 +11,7 @@ class SnapController extends Controller
 {
     public function __construct()
     {   
-        Midtrans::$serverKey = 'VT-server-UJ4uPuXhwiNXwhpQx5-S76U1';
+        Midtrans::$serverKey = 'your server key';
         Midtrans::$isProduction = false;
     }
 

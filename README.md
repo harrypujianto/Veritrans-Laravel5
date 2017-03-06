@@ -118,7 +118,6 @@ public function token()
             'shipping_address'=> $shipping_address
             );
         // Data yang akan dikirim untuk request redirect_url.
-        // Uncomment 'credit_card_3d_secure' => true jika transaksi ingin diproses dengan 3DSecure.
         $transaction_data = array(
             'transaction_details'=> $transaction_details,
             'item_details'           => $items,
@@ -140,6 +139,9 @@ public function token()
 
 #### SNAP UI
 In this section you could see the code, how to get snap token with ajax and open the snap pop up on the page. Please refer [here](https://github.com/harrypujianto/Veritrans-Laravel5/blob/master/resources/views/snap_checkout.blade.php)
+
+For sandbox use https://app.sandbox.midtrans.com/snap/snap.js
+For production use https://app.midtrans.com/snap/snap.js
 ```
 <html>
 <title>Checkout</title>
@@ -378,112 +380,112 @@ you can see VT-Direct process [here](https://github.com/harrypujianto/Veritrans-
 ```html
 <html>
 <head>
-	<title>Checkout</title>
-	<!-- Include PaymentAPI  -->
-	<link href="{{ URL::to('css/jquery.fancybox.css') }}" rel="stylesheet"> 
+    <title>Checkout</title>
+    <!-- Include PaymentAPI  -->
+    <link href="{{ URL::to('css/jquery.fancybox.css') }}" rel="stylesheet"> 
 </head>
 <body>
-	<script type="text/javascript" src="https://api.sandbox.veritrans.co.id/v2/assets/js/veritrans.min.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>	
-	<script type="text/javascript" src="{{ URL::to('js/jquery.fancybox.pack.js') }}"></script>
+    <script type="text/javascript" src="https://api.sandbox.veritrans.co.id/v2/assets/js/veritrans.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script> 
+    <script type="text/javascript" src="{{ URL::to('js/jquery.fancybox.pack.js') }}"></script>
 
-	<h1>Checkout</h1>
-	<form action="vtdirect" method="POST" id="payment-form">
-		<fieldset>
-			<legend>Checkout</legend>
-			<p>
-				<label>Card Number</label>
-				<input class="card-number" value="4811111111111114" size="20" type="text" autocomplete="off"/>
-			</p>
-			<p>
-				<label>Expiration (MM/YYYY)</label>
-				<input class="card-expiry-month" value="12" placeholder="MM" size="2" type="text" />
-		    	<span> / </span>
-		    	<input class="card-expiry-year" value="2018" placeholder="YYYY" size="4" type="text" />
-			</p>
-			<p>
-		    	<label>CVV</label>
-		    	<input class="card-cvv" value="123" size="4" type="password" autocomplete="off"/>
-			</p>
+    <h1>Checkout</h1>
+    <form action="vtdirect" method="POST" id="payment-form">
+        <fieldset>
+            <legend>Checkout</legend>
+            <p>
+                <label>Card Number</label>
+                <input class="card-number" value="4811111111111114" size="20" type="text" autocomplete="off"/>
+            </p>
+            <p>
+                <label>Expiration (MM/YYYY)</label>
+                <input class="card-expiry-month" value="12" placeholder="MM" size="2" type="text" />
+                <span> / </span>
+                <input class="card-expiry-year" value="2018" placeholder="YYYY" size="4" type="text" />
+            </p>
+            <p>
+                <label>CVV</label>
+                <input class="card-cvv" value="123" size="4" type="password" autocomplete="off"/>
+            </p>
 
-			<p>
-		    	<label>Save credit card</label>
-		    	<input type="checkbox" name="save_cc" value="true">
-			</p>
+            <p>
+                <label>Save credit card</label>
+                <input type="checkbox" name="save_cc" value="true">
+            </p>
 
-			<input id="token_id" name="token_id" type="hidden" />
-			<button class="submit-button" type="submit">Submit Payment</button>
-		</fieldset>
-	</form>
+            <input id="token_id" name="token_id" type="hidden" />
+            <button class="submit-button" type="submit">Submit Payment</button>
+        </fieldset>
+    </form>
 
-	<!-- Javascript for token generation -->
-	<script type="text/javascript">
-	$(function(){
-		// Sandbox URL
-		Veritrans.url = "https://api.sandbox.veritrans.co.id/v2/token";
-		// TODO: Change with your client key.
-		Veritrans.client_key = "<your client key>";
-		
-		//Veritrans.client_key = "d4b273bc-201c-42ae-8a35-c9bf48c1152b";
-		var card = function(){
-			return { 	'card_number'		: $(".card-number").val(),
-						'card_exp_month'	: $(".card-expiry-month").val(),
-						'card_exp_year'		: $(".card-expiry-year").val(),
-						'card_cvv'			: $(".card-cvv").val(),
-						'secure'			: true,
-						'bank'				: 'bni',
-						'gross_amount'		: 10000
-						 }
-		};
+    <!-- Javascript for token generation -->
+    <script type="text/javascript">
+    $(function(){
+        // Sandbox URL
+        Veritrans.url = "https://api.sandbox.veritrans.co.id/v2/token";
+        // TODO: Change with your client key.
+        Veritrans.client_key = "<your client key>";
+        
+        //Veritrans.client_key = "d4b273bc-201c-42ae-8a35-c9bf48c1152b";
+        var card = function(){
+            return {    'card_number'       : $(".card-number").val(),
+                        'card_exp_month'    : $(".card-expiry-month").val(),
+                        'card_exp_year'     : $(".card-expiry-year").val(),
+                        'card_cvv'          : $(".card-cvv").val(),
+                        'secure'            : true,
+                        'bank'              : 'bni',
+                        'gross_amount'      : 10000
+                         }
+        };
 
-		function callback(response) {
-			if (response.redirect_url) {
-				// 3dsecure transaction, please open this popup
-				openDialog(response.redirect_url);
+        function callback(response) {
+            if (response.redirect_url) {
+                // 3dsecure transaction, please open this popup
+                openDialog(response.redirect_url);
 
-			} else if (response.status_code == '200') {
-				// success 3d secure or success normal
-				closeDialog();
-				// submit form
-				$(".submit-button").attr("disabled", "disabled"); 
-				$("#token_id").val(response.token_id);
-				$("#payment-form").submit();
-			} else {
-				// failed request token
-				console.log('Close Dialog - failed');
-				//closeDialog();
-				//$('#purchase').removeAttr('disabled');
-				// $('#message').show(FADE_DELAY);
-				// $('#message').text(response.status_message);
-				//alert(response.status_message);
-			}
-		}
+            } else if (response.status_code == '200') {
+                // success 3d secure or success normal
+                closeDialog();
+                // submit form
+                $(".submit-button").attr("disabled", "disabled"); 
+                $("#token_id").val(response.token_id);
+                $("#payment-form").submit();
+            } else {
+                // failed request token
+                console.log('Close Dialog - failed');
+                //closeDialog();
+                //$('#purchase').removeAttr('disabled');
+                // $('#message').show(FADE_DELAY);
+                // $('#message').text(response.status_message);
+                //alert(response.status_message);
+            }
+        }
 
-		function openDialog(url) {
-			$.fancybox.open({
-		        href: url,
-		        type: 'iframe',
-		        autoSize: false,
-		        width: 700,
-		        height: 500,
-		        closeBtn: false,
-		        modal: true
-		    });
-		}
+        function openDialog(url) {
+            $.fancybox.open({
+                href: url,
+                type: 'iframe',
+                autoSize: false,
+                width: 700,
+                height: 500,
+                closeBtn: false,
+                modal: true
+            });
+        }
 
-		function closeDialog() {
-			$.fancybox.close();
-		}
-		
-		$('.submit-button').click(function(event){
-			event.preventDefault();
-			//$(this).attr("disabled", "disabled"); 
-			Veritrans.token(card, callback);
-			return false;
-		});
-	});
+        function closeDialog() {
+            $.fancybox.close();
+        }
+        
+        $('.submit-button').click(function(event){
+            event.preventDefault();
+            //$(this).attr("disabled", "disabled"); 
+            Veritrans.token(card, callback);
+            return false;
+        });
+    });
 
-	</script>
+    </script>
 </body>
 </html>
 ```
