@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Veritrans;
-use App\Exceptions\VeritransException;
+use App\Exceptions\VeritransException as Exception;
 
 class Midtrans {
 
