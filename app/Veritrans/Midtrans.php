@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Veritrans;
-use App\Exceptions\VeritransException as Exception;
+use App\Exceptions\VeritransException as VeritransException;
 
 class Midtrans {
 
@@ -10,7 +10,7 @@ class Midtrans {
     * @static
     */
   public static $serverKey;
-  
+
   /**
     * true for production
     * false for sandbox mode
@@ -22,13 +22,13 @@ class Midtrans {
     * Default options for every request
     * @static
     */
-    public static $curlOptions = array(); 
+    public static $curlOptions = array();
 
     const SANDBOX_BASE_URL = 'https://api.sandbox.veritrans.co.id/v2';
     const PRODUCTION_BASE_URL = 'https://api.veritrans.co.id/v2';
     const SNAP_SANDBOX_BASE_URL = 'https://app.sandbox.midtrans.com/snap/v1';
     const SNAP_PRODUCTION_BASE_URL = 'https://app.midtrans.com/snap/v1';
-    
+
 
     public function config($params)
     {
@@ -81,7 +81,7 @@ class Midtrans {
    * @param bool    $post
    */
     public static function remoteCall($url, $server_key, $data_hash, $post = true)
-    { 
+    {
       $ch = curl_init();
 
       $curl_options = array(
@@ -144,7 +144,7 @@ class Midtrans {
 
   public static function getSnapToken($params)
   {
-    
+
     $result = Midtrans::post(
         Midtrans::getSnapBaseUrl() . '/transactions',
         Midtrans::$serverKey,
@@ -152,7 +152,7 @@ class Midtrans {
 
     return $result->token;
   }
-  
+
     /**
     * Retrieve transaction status
     * @param string $id Order ID or transaction ID
