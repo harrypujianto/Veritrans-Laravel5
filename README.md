@@ -60,36 +60,240 @@ class YourController extends Controller
     }
 ...
 ```
+### SNAP
+You can see how to get snap token by reading the controller [here](https://github.com/harrypujianto/Veritrans-Laravel5/blob/master/app/Http/Controllers/SnapController.php).
+
+#### Get Snap Token
+```php
+public function token() 
+    {
+        error_log('masuk ke snap token adri ajax');
+        $midtrans = new Midtrans;
+        $transaction_details = array(
+            'order_id'          => uniqid(),
+            'gross_amount'  => 200000
+        );
+        // Populate items
+        $items = [
+            array(
+                'id'                => 'item1',
+                'price'         => 100000,
+                'quantity'  => 1,
+                'name'          => 'Adidas f50'
+            ),
+            array(
+                'id'                => 'item2',
+                'price'         => 50000,
+                'quantity'  => 2,
+                'name'          => 'Nike N90'
+            )
+        ];
+        // Populate customer's billing address
+        $billing_address = array(
+            'first_name'        => "Andri",
+            'last_name'         => "Setiawan",
+            'address'           => "Karet Belakang 15A, Setiabudi.",
+            'city'                  => "Jakarta",
+            'postal_code'   => "51161",
+            'phone'                 => "081322311801",
+            'country_code'  => 'IDN'
+            );
+        // Populate customer's shipping address
+        $shipping_address = array(
+            'first_name'    => "John",
+            'last_name'     => "Watson",
+            'address'       => "Bakerstreet 221B.",
+            'city'              => "Jakarta",
+            'postal_code' => "51162",
+            'phone'             => "081322311801",
+            'country_code'=> 'IDN'
+            );
+        // Populate customer's Info
+        $customer_details = array(
+            'first_name'            => "Andri",
+            'last_name'             => "Setiawan",
+            'email'                     => "andrisetiawan@asdasd.com",
+            'phone'                     => "081322311801",
+            'billing_address' => $billing_address,
+            'shipping_address'=> $shipping_address
+            );
+        // Data yang akan dikirim untuk request redirect_url.
+        $transaction_data = array(
+            'transaction_details'=> $transaction_details,
+            'item_details'           => $items,
+            'customer_details'   => $customer_details
+        );
+    
+        try
+        {
+            $snap_token = $midtrans->getSnapToken($transaction_data);
+            //return redirect($vtweb_url);
+            echo $snap_token;
+        } 
+        catch (Exception $e) 
+        {   
+            return $e->getMessage;
+        }
+    }
+```
+
+#### SNAP UI
+In this section you could see the code, how to get snap token with ajax and open the snap pop up on the page. Please refer [here](https://github.com/harrypujianto/Veritrans-Laravel5/blob/master/resources/views/snap_checkout.blade.php)
+
+For sandbox use https://app.sandbox.midtrans.com/snap/snap.js
+For production use https://app.midtrans.com/snap/snap.js
+```
+<html>
+<title>Checkout</title>
+  <head>
+    <script type="text/javascript"
+            src="https://app.sandbox.midtrans.com/snap/snap.js"
+            data-client-key="<CLIENT-KEY>"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  </head>
+  <body>
+
+    
+    <form id="payment-form" method="post" action="snapfinish">
+      <input type="hidden" name="_token" value="{!! csrf_token() !!}">
+      <input type="hidden" name="result_type" id="result-type" value=""></div>
+      <input type="hidden" name="result_data" id="result-data" value=""></div>
+    </form>
+    
+    <button id="pay-button">Pay!</button>
+    <script type="text/javascript">
+  
+    $('#pay-button').click(function (event) {
+      event.preventDefault();
+      $(this).attr("disabled", "disabled");
+    
+    $.ajax({
+      
+      url: './snaptoken',
+      cache: false,
+      success: function(data) {
+        //location = data;
+        console.log('token = '+data);
+        
+        var resultType = document.getElementById('result-type');
+        var resultData = document.getElementById('result-data');
+        function changeResult(type,data){
+          $("#result-type").val(type);
+          $("#result-data").val(JSON.stringify(data));
+          //resultType.innerHTML = type;
+          //resultData.innerHTML = JSON.stringify(data);
+        }
+        snap.pay(data, {
+          
+          onSuccess: function(result){
+            changeResult('success', result);
+            console.log(result.status_message);
+            console.log(result);
+            $("#payment-form").submit();
+          },
+          onPending: function(result){
+            changeResult('pending', result);
+            console.log(result.status_message);
+            $("#payment-form").submit();
+          },
+          onError: function(result){
+            changeResult('error', result);
+            console.log(result.status_message);
+            $("#payment-form").submit();
+          }
+        });
+      }
+    });
+  });
+  </script>
+
+
+</body>
+</html>
+
+```
 
 ### VT-Web
 
-You can see some more details of VT-Web examples [here](https://github.com/harrypujianto/Veritrans-Laravel5/blob/master/app/Http/Controllers/VtwebController.php`).
+You can see some more details of VT-Web examples [here](https://github.com/harrypujianto/Veritrans-Laravel5/blob/master/app/Http/Controllers/VtwebController.php).
 
 #### Get Redirection URL of a Charge
 ```php
 //you don't have to use the function name 'vtweb', it's just an example
-public function vtweb()
-{
-    //create new object from Veritrans class
-    $vt = new Veritrans;
+public function vtweb() 
+    {
+        $vt = new Veritrans;
+        $transaction_details = array(
+            'order_id'          => uniqid(),
+            'gross_amount'  => 200000
+        );
+        // Populate items
+        $items = [
+            array(
+                'id'                => 'item1',
+                'price'         => 100000,
+                'quantity'  => 1,
+                'name'          => 'Adidas f50'
+            ),
+            array(
+                'id'                => 'item2',
+                'price'         => 50000,
+                'quantity'  => 2,
+                'name'          => 'Nike N90'
+            )
+        ];
+        // Populate customer's billing address
+        $billing_address = array(
+            'first_name'        => "Andri",
+            'last_name'         => "Setiawan",
+            'address'           => "Karet Belakang 15A, Setiabudi.",
+            'city'                  => "Jakarta",
+            'postal_code'   => "51161",
+            'phone'                 => "081322311801",
+            'country_code'  => 'IDN'
+            );
+        // Populate customer's shipping address
+        $shipping_address = array(
+            'first_name'    => "John",
+            'last_name'     => "Watson",
+            'address'       => "Bakerstreet 221B.",
+            'city'              => "Jakarta",
+            'postal_code' => "51162",
+            'phone'             => "081322311801",
+            'country_code'=> 'IDN'
+            );
+        // Populate customer's Info
+        $customer_details = array(
+            'first_name'            => "Andri",
+            'last_name'             => "Setiawan",
+            'email'                     => "andrisetiawan@asdasd.com",
+            'phone'                     => "081322311801",
+            'billing_address' => $billing_address,
+            'shipping_address'=> $shipping_address
+            );
+        // Data yang akan dikirim untuk request redirect_url.
+        // Uncomment 'credit_card_3d_secure' => true jika transaksi ingin diproses dengan 3DSecure.
+        $transaction_data = array(
+            'payment_type'          => 'vtweb', 
+            'vtweb'                         => array(
+                //'enabled_payments'    => [],
+                'credit_card_3d_secure' => true
+            ),
+            'transaction_details'=> $transaction_details,
+            'item_details'           => $items,
+            'customer_details'   => $customer_details
+        );
     
-    $params = array(
-        'transaction_details' => array(
-          'order_id' => rand(),
-          'gross_amount' => 10000,
-        ),
-        'vtweb' => array()
-      );
-    ....
-    try {
-      // Redirect to Veritrans VTWeb page
-       $vtweb_url = $vt->vtweb_charge($transaction_data);
-       return redirect($vtweb_url);
+        try
+        {
+            $vtweb_url = $vt->vtweb_charge($transaction_data);
+            return redirect($vtweb_url);
+        } 
+        catch (Exception $e) 
+        {   
+            return $e->getMessage;
+        }
     }
-    catch (Exception $e) {
-      return $e->getMessage();
-    }
-}
 ```
 
 #### Handle Notification Callback
@@ -176,112 +380,112 @@ you can see VT-Direct process [here](https://github.com/harrypujianto/Veritrans-
 ```html
 <html>
 <head>
-	<title>Checkout</title>
-	<!-- Include PaymentAPI  -->
-	<link href="{{ URL::to('css/jquery.fancybox.css') }}" rel="stylesheet"> 
+    <title>Checkout</title>
+    <!-- Include PaymentAPI  -->
+    <link href="{{ URL::to('css/jquery.fancybox.css') }}" rel="stylesheet"> 
 </head>
 <body>
-	<script type="text/javascript" src="https://api.sandbox.veritrans.co.id/v2/assets/js/veritrans.min.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>	
-	<script type="text/javascript" src="{{ URL::to('js/jquery.fancybox.pack.js') }}"></script>
+    <script type="text/javascript" src="https://api.sandbox.veritrans.co.id/v2/assets/js/veritrans.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script> 
+    <script type="text/javascript" src="{{ URL::to('js/jquery.fancybox.pack.js') }}"></script>
 
-	<h1>Checkout</h1>
-	<form action="vtdirect" method="POST" id="payment-form">
-		<fieldset>
-			<legend>Checkout</legend>
-			<p>
-				<label>Card Number</label>
-				<input class="card-number" value="4811111111111114" size="20" type="text" autocomplete="off"/>
-			</p>
-			<p>
-				<label>Expiration (MM/YYYY)</label>
-				<input class="card-expiry-month" value="12" placeholder="MM" size="2" type="text" />
-		    	<span> / </span>
-		    	<input class="card-expiry-year" value="2018" placeholder="YYYY" size="4" type="text" />
-			</p>
-			<p>
-		    	<label>CVV</label>
-		    	<input class="card-cvv" value="123" size="4" type="password" autocomplete="off"/>
-			</p>
+    <h1>Checkout</h1>
+    <form action="vtdirect" method="POST" id="payment-form">
+        <fieldset>
+            <legend>Checkout</legend>
+            <p>
+                <label>Card Number</label>
+                <input class="card-number" value="4811111111111114" size="20" type="text" autocomplete="off"/>
+            </p>
+            <p>
+                <label>Expiration (MM/YYYY)</label>
+                <input class="card-expiry-month" value="12" placeholder="MM" size="2" type="text" />
+                <span> / </span>
+                <input class="card-expiry-year" value="2018" placeholder="YYYY" size="4" type="text" />
+            </p>
+            <p>
+                <label>CVV</label>
+                <input class="card-cvv" value="123" size="4" type="password" autocomplete="off"/>
+            </p>
 
-			<p>
-		    	<label>Save credit card</label>
-		    	<input type="checkbox" name="save_cc" value="true">
-			</p>
+            <p>
+                <label>Save credit card</label>
+                <input type="checkbox" name="save_cc" value="true">
+            </p>
 
-			<input id="token_id" name="token_id" type="hidden" />
-			<button class="submit-button" type="submit">Submit Payment</button>
-		</fieldset>
-	</form>
+            <input id="token_id" name="token_id" type="hidden" />
+            <button class="submit-button" type="submit">Submit Payment</button>
+        </fieldset>
+    </form>
 
-	<!-- Javascript for token generation -->
-	<script type="text/javascript">
-	$(function(){
-		// Sandbox URL
-		Veritrans.url = "https://api.sandbox.veritrans.co.id/v2/token";
-		// TODO: Change with your client key.
-		Veritrans.client_key = "<your client key>";
-		
-		//Veritrans.client_key = "d4b273bc-201c-42ae-8a35-c9bf48c1152b";
-		var card = function(){
-			return { 	'card_number'		: $(".card-number").val(),
-						'card_exp_month'	: $(".card-expiry-month").val(),
-						'card_exp_year'		: $(".card-expiry-year").val(),
-						'card_cvv'			: $(".card-cvv").val(),
-						'secure'			: true,
-						'bank'				: 'bni',
-						'gross_amount'		: 10000
-						 }
-		};
+    <!-- Javascript for token generation -->
+    <script type="text/javascript">
+    $(function(){
+        // Sandbox URL
+        Veritrans.url = "https://api.sandbox.veritrans.co.id/v2/token";
+        // TODO: Change with your client key.
+        Veritrans.client_key = "<your client key>";
+        
+        //Veritrans.client_key = "d4b273bc-201c-42ae-8a35-c9bf48c1152b";
+        var card = function(){
+            return {    'card_number'       : $(".card-number").val(),
+                        'card_exp_month'    : $(".card-expiry-month").val(),
+                        'card_exp_year'     : $(".card-expiry-year").val(),
+                        'card_cvv'          : $(".card-cvv").val(),
+                        'secure'            : true,
+                        'bank'              : 'bni',
+                        'gross_amount'      : 10000
+                         }
+        };
 
-		function callback(response) {
-			if (response.redirect_url) {
-				// 3dsecure transaction, please open this popup
-				openDialog(response.redirect_url);
+        function callback(response) {
+            if (response.redirect_url) {
+                // 3dsecure transaction, please open this popup
+                openDialog(response.redirect_url);
 
-			} else if (response.status_code == '200') {
-				// success 3d secure or success normal
-				closeDialog();
-				// submit form
-				$(".submit-button").attr("disabled", "disabled"); 
-				$("#token_id").val(response.token_id);
-				$("#payment-form").submit();
-			} else {
-				// failed request token
-				console.log('Close Dialog - failed');
-				//closeDialog();
-				//$('#purchase').removeAttr('disabled');
-				// $('#message').show(FADE_DELAY);
-				// $('#message').text(response.status_message);
-				//alert(response.status_message);
-			}
-		}
+            } else if (response.status_code == '200') {
+                // success 3d secure or success normal
+                closeDialog();
+                // submit form
+                $(".submit-button").attr("disabled", "disabled"); 
+                $("#token_id").val(response.token_id);
+                $("#payment-form").submit();
+            } else {
+                // failed request token
+                console.log('Close Dialog - failed');
+                //closeDialog();
+                //$('#purchase').removeAttr('disabled');
+                // $('#message').show(FADE_DELAY);
+                // $('#message').text(response.status_message);
+                //alert(response.status_message);
+            }
+        }
 
-		function openDialog(url) {
-			$.fancybox.open({
-		        href: url,
-		        type: 'iframe',
-		        autoSize: false,
-		        width: 700,
-		        height: 500,
-		        closeBtn: false,
-		        modal: true
-		    });
-		}
+        function openDialog(url) {
+            $.fancybox.open({
+                href: url,
+                type: 'iframe',
+                autoSize: false,
+                width: 700,
+                height: 500,
+                closeBtn: false,
+                modal: true
+            });
+        }
 
-		function closeDialog() {
-			$.fancybox.close();
-		}
-		
-		$('.submit-button').click(function(event){
-			event.preventDefault();
-			//$(this).attr("disabled", "disabled"); 
-			Veritrans.token(card, callback);
-			return false;
-		});
-	});
+        function closeDialog() {
+            $.fancybox.close();
+        }
+        
+        $('.submit-button').click(function(event){
+            event.preventDefault();
+            //$(this).attr("disabled", "disabled"); 
+            Veritrans.token(card, callback);
+            return false;
+        });
+    });
 
-	</script>
+    </script>
 </body>
 </html>
 ```
