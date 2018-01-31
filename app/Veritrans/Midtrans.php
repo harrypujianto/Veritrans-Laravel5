@@ -10,7 +10,7 @@ class Midtrans {
     * @static
     */
   public static $serverKey;
-
+  
   /**
     * true for production
     * false for sandbox mode
@@ -22,13 +22,13 @@ class Midtrans {
     * Default options for every request
     * @static
     */
-    public static $curlOptions = array();
+    public static $curlOptions = array(); 
 
     const SANDBOX_BASE_URL = 'https://api.sandbox.veritrans.co.id/v2';
     const PRODUCTION_BASE_URL = 'https://api.veritrans.co.id/v2';
     const SNAP_SANDBOX_BASE_URL = 'https://app.sandbox.midtrans.com/snap/v1';
     const SNAP_PRODUCTION_BASE_URL = 'https://app.midtrans.com/snap/v1';
-
+    
 
     public function config($params)
     {
@@ -81,7 +81,7 @@ class Midtrans {
    * @param bool    $post
    */
     public static function remoteCall($url, $server_key, $data_hash, $post = true)
-    {
+    { 
       $ch = curl_init();
 
       $curl_options = array(
@@ -144,7 +144,7 @@ class Midtrans {
 
   public static function getSnapToken($params)
   {
-
+    
     $result = Midtrans::post(
         Midtrans::getSnapBaseUrl() . '/transactions',
         Midtrans::$serverKey,
@@ -152,57 +152,5 @@ class Midtrans {
 
     return $result->token;
   }
-
-    /**
-    * Retrieve transaction status
-    * @param string $id Order ID or transaction ID
-    * @return mixed[]
-    */
-  public static function status($id)
-  {
-      return Midtrans::get(
-          Midtrans::getBaseUrl() . '/' . $id . '/status',
-          Midtrans::$serverKey,
-          false);
-    }
-
-    /**
-    * Appove challenge transaction
-    * @param string $id Order ID or transaction ID
-    * @return string
-    */
-    public static function approve($id)
-    {
-      return Midtrans::post(
-          Midtrans::getBaseUrl() . '/' . $id . '/approve',
-          Midtrans::$serverKey,
-          false)->status_code;
-    }
-
-    /**
-    * Cancel transaction before it's setteled
-    * @param string $id Order ID or transaction ID
-    * @return string
-    */
-    public static function cancel($id)
-    {
-      return Midtrans::post(
-          Midtrans::getBaseUrl() . '/' . $id . '/cancel',
-          Midtrans::$serverKey,
-          false)->status_code;
-    }
-
-   /**
-    * Expire transaction before it's setteled
-    * @param string $id Order ID or transaction ID
-    * @return mixed[]
-    */
-    public static function expire($id)
-    {
-      return Midtrans::post(
-          Midtrans::getBaseUrl() . '/' . $id . '/expire',
-          Midtrans::$serverKey,
-          false);
-    }
 
 }
