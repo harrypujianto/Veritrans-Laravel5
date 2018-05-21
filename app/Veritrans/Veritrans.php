@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Veritrans;
-use App\Exceptions\VeritransException as VeritransException;
+use App\Exceptions\VeritransException as Exception;
 
 Class Veritrans
 {
@@ -118,7 +118,7 @@ Class Veritrans
 	    // curl_close($ch);
 	   
 	    if ($result === FALSE) {
-	      throw new VeritransException('CURL Error: ' . curl_error($ch), curl_errno($ch));
+	      throw new Exception('CURL Error: ' . curl_error($ch), curl_errno($ch));
 	    }
 	    else {
 	      $result_array = json_decode($result);
@@ -126,7 +126,7 @@ Class Veritrans
 	        $message = 'Veritrans Error (' . $result_array->status_code . '): '
 	            . $result_array->status_message;
 	        //throw new Exception($message, $result_array->status_code);
-          throw new VeritransException($message, $result_array->status_code);
+          throw new Exception($message, $result_array->status_code);
 	      }
 	      else {
 	        return $result_array;
