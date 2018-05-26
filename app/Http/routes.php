@@ -11,15 +11,15 @@
 |
 */
 
-Route::get('/vtweb', 'PagesController@vtweb');
+Route::get('/vtweb', 'VtwebController@vtweb');
 
-Route::get('/vtdirect', 'PagesController@vtdirect');
-Route::post('/vtdirect', 'PagesController@checkout_process');
+Route::get('/vtdirect', 'VtdirectController@vtdirect');
+Route::post('/vtdirect', 'VtdirectController@checkout_process');
 
-Route::get('/vt_transaction', 'PagesController@transaction');
-Route::post('/vt_transaction', 'PagesController@transaction_process');
+Route::get('/vt_transaction', 'TransactionController@transaction');
+Route::post('/vt_transaction', 'TransactionController@transaction_process');
 
-Route::post('/vt_notif', 'PagesController@notification');
+Route::post('/vt_notif', 'TransactionController@notification');
 
 Route::get('/snap', 'SnapController@snap');
 Route::get('/snaptoken', 'SnapController@token');
