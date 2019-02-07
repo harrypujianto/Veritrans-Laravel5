@@ -9,24 +9,31 @@
   <body>
 
     
-    <form id="payment-form" method="post" action="snapfinish">
-      <input type="hidden" name="_token" value="{!! csrf_token() !!}">
-      <input type="hidden" name="result_type" id="result-type" value=""></div>
-      <input type="hidden" name="result_data" id="result-data" value=""></div>
+    <form id="payment-form" method="post">
+      @csrf
+      <input type="hidden" name="result_type" id="result-type" value="">
+      <input type="hidden" name="result_data" id="result-data" value="">
     </form>
     
     <button id="pay-button">Pay!</button>
     <script type="text/javascript">
   
     $('#pay-button').click(function (event) {
+         $.ajaxSetup({
+        		headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+      		});
       event.preventDefault();
       $(this).attr("disabled", "disabled");
     
     $.ajax({
       
-      url: './snaptoken',
+      url: './snaptoken', //url provids here there is no need to action attribute in form html tag
       cache: false,
-
+      dataType: "json",
+			type: "POST",
+      data: {
+					'_token': $('input[name=_token]').val(),
+			},
       success: function(data) {
         //location = data;
 
