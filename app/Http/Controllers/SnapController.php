@@ -23,7 +23,7 @@ class SnapController extends Controller
 
     public function token() 
     {
-        error_log('masuk ke snap token dri ajax');
+        error_log('masuk ke snap token dari ajax');
         $midtrans = new Midtrans;
 
         $transaction_details = array(
